@@ -1,30 +1,84 @@
 import requests
 from bs4 import BeautifulSoup as BS
+import time
+from datetime import datetime
+import yagmail
+import os
+from dotenv import load_dotenv
 
-anime_URL = "https://aniwatchtv.to/one-piece-100?ref=search"
-manga_URL = "https://www.viz.com/shonenjump/chapters/one-piece"
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
+ANIME_URL = os.getenv("ANIME_URL")
+MANGA_URL = os.getenv("MANGA_URL")
 
-anime_page = requests.get(anime_URL)
-manga_page = requests.get(manga_URL)
+last_anime_page = requests.get(ANIME_URL)
+last_manga_page = requests.get(MANGA_URL)
 
-# print(anime_page.text)
-# print(manga_page.text, "\n")
+last_anime_soup = BS(last_anime_page.content, "html.parser")
+last_manga_soup = BS(last_manga_page.content, "html.parser")
 
-anime_soup = BS(anime_page.content, "html.parser")
-manga_soup = BS(manga_page.content, "html.parser")
+yag = yagmail.SMTP(EMAIL_USER, EMAIL_PASS)
 
-# Finding the Subbed Episode Number for One Piece Anime
-anime_results = anime_soup.find("a", title="One Piece")
-film_detail = anime_results.find_parent("div", class_="film-detail")
-fd_info = film_detail.find("div", class_="fd-infor")
-sub_ep_num = fd_info.find("div", class_="tick-sub").text.strip()
+# Finding the Subbed Episode Number for One Piece Anime Soup Object
+def get_episode_anime_soup(anime_soup):
+    anime_results = anime_soup.find("a", title="One Piece")
+    film_detail = anime_results.find_parent("div", class_="film-detail")
+    fd_info = film_detail.find("div", class_="fd-infor")
+    sub_ep_num = int(fd_info.find("div", class_="tick-sub").text.strip())
 
-# Finding the Chapter Number for One Piece Manga
-manga_results = manga_soup.find("div", id="chpt_rows")
-future_div = manga_results.find("div", class_="section_future_chapter")
-latest_chapter_div = future_div.find_next_sibling("div")
-def is_chapter_text(text):
-    return text and "Ch." in text
-chapter_num_str = latest_chapter_div.find("div", string=is_chapter_text).text.strip()
-chapter_num = chapter_num_str[4:]
+    return sub_ep_num
+
+# Finding the Chapter Number for One Piece Manga Soup Object
+def get_chapter_manga_soup(manga_soup):
+    manga_results = manga_soup.find("div", id="chpt_rows")
+    future_div = manga_results.find("div", class_="section_future_chapter")
+    latest_chapter_div = future_div.find_next_sibling("div")
+    def is_chapter_text(text):
+        return text and "Ch." in text
+    chapter_num_str = latest_chapter_div.find("div", string=is_chapter_text).text.strip()
+    chapter_num = int(chapter_num_str[4:])
+
+    return chapter_num
+
+last_anime_episode = get_episode_anime_soup(last_anime_soup)
+last_manga_chapter = get_chapter_manga_soup(last_manga_soup)
+
+while True: 
+    this_anime_page = requests.get(ANIME_URL)
+    this_manga_page = requests.get(MANGA_URL)
+
+    this_anime_soup = BS(this_anime_page.content, "html.parser")
+    this_manga_soup = BS(this_manga_page.content, "html.parser")
+
+    this_anime_episode = get_episode_anime_soup(this_anime_soup)
+    this_manga_chapter = get_chapter_manga_soup(this_manga_soup)
+
+    if this_anime_episode != last_anime_episode: 
+        # Send email about new episode
+        yag.send(
+            to=EMAIL_USER,
+            subject="New One Piece Episode! Episode " + str(this_anime_episode),
+            contents="empty body",
+        )
+        print("New One Piece Episode! Episode " + str(this_anime_episode))
+        last_anime_episode = this_anime_episode
+
+    if this_manga_chapter != last_manga_chapter: 
+        # Send email about new chapter
+        yag.send(
+            to=EMAIL_USER,
+            subject="New One Piece Chapter! Chapter " + str(this_manga_chapter),
+            contents="empty body",
+        )
+        print("New One Piece Chapter! Chapter " + str(this_manga_chapter))
+        last_manga_chapter = this_manga_chapter
+    
+    current_weekday = datetime.now().weekday() # 0 = Monday, 1 = Tuesday, ... , 6 = Sunday
+    if current_weekday == 6 or current_weekday == 0:
+        time.sleep(5 * 60) # every 5 minutes
+    else:
+        time.sleep(10 * 60) # every 10 minutes
+    
+
+
 
