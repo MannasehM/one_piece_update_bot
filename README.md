@@ -1,8 +1,6 @@
-# 🏴‍☠️ One Piece Bot
+## 🏴‍☠️ One Piece Bot
 
 This bot checks for **new One Piece episodes** and **new manga chapters**, and if it finds something new, it **sends you an email**!
-
----
 
 ## 🔍 What It Does
 
@@ -11,8 +9,6 @@ This bot checks for **new One Piece episodes** and **new manga chapters**, and i
 - 💾 Remembers the last episode/chapter it saw
 - 📬 Sends an email if a new one comes out
 - ☁️ Stays online 24/7 using **Render + UptimeRobot**
-
----
 
 ## 🧠 How It Works (Simple Steps)
 
