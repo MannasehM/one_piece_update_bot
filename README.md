@@ -36,6 +36,8 @@ This keeps the bot "alive" on Render (free web hosting).
 Use [UptimeRobot](https://uptimerobot.com/) to ping your Flask app every 5 minutes  
 so Render doesn't put it to sleep.
 
+![Image](https://github.com/user-attachments/assets/c69306fb-c8c3-47e3-be85-c80b300c2805)
+
 ---
 
 Made with ❤️ for One Piece fans.
