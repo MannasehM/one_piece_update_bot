@@ -58,8 +58,7 @@ def run_bot():
     last_anime_soup = BS(last_anime_page.content, "html.parser")
     last_manga_soup = BS(last_manga_page.content, "html.parser")
 
-    #last_anime_episode = get_episode_anime_soup(last_anime_soup)
-    last_anime_episode = 1137
+    last_anime_episode = get_episode_anime_soup(last_anime_soup)
     last_manga_chapter = get_chapter_manga_soup(last_manga_soup)
 
     print("Bot started. Last known episode:", last_anime_episode)
