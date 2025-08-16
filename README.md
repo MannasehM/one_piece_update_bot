@@ -4,8 +4,8 @@ This bot checks for **new One Piece episodes** and **new manga chapters**, and i
 
 ## 🔍 What It Does
 
-- 📺 Checks anime: [aniwatchtv.to](https://aniwatchtv.to/one-piece-100?ref=search)
-- 📖 Checks manga: [viz.com](https://www.viz.com/shonenjump/chapters/one-piece)
+- 📺 Checks anime website
+- 📖 Checks manga website
 - 💾 Remembers the last episode/chapter it saw
 - 📬 Sends an email if a new one comes out
 - ☁️ Stays online 24/7 using **Render + UptimeRobot**
