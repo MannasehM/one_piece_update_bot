@@ -40,11 +40,17 @@ def get_episode_anime_soup(anime_soup):
 # Finding the Chapter Number for One Piece Manga Soup Object
 def get_chapter_manga_soup(manga_soup):
     manga_results = manga_soup.find("div", id="chpt_rows")
-    future_div = manga_results.find("div", class_="section_future_chapter")
-    latest_chapter_div = future_div.find_next_sibling("div")
+    first_div = manga_results.find("div", recursive=False)
+
+    if "section_future_chapter" in first_div.get("class", []):
+        latest_chapter_div = first_div.find_next_sibling("div")
+    else:
+        latest_chapter_div = first_div
+
     def is_chapter_text(text):
         return text and "Ch." in text
-    chapter_num_str = latest_chapter_div.find("div", string=is_chapter_text).text.strip()
+
+    chapter_num_str = latest_chapter_div.find(string=is_chapter_text).strip()
     chapter_num = int(chapter_num_str[4:])
 
     return chapter_num
